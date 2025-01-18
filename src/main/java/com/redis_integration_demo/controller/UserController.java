@@ -1,6 +1,7 @@
 package com.redis_integration_demo.controller;
 
 import com.redis_integration_demo.dto.CreateUserRequest;
+import com.redis_integration_demo.dto.UpdateUserRequest;
 import com.redis_integration_demo.dto.UserResponse;
 import com.redis_integration_demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,14 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         UserResponse response = userService.getUserById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable Long id,
+            @RequestBody UpdateUserRequest request) {
+        UserResponse response = userService.updateUser(id, request);
         return ResponseEntity.ok(response);
     }
 }
