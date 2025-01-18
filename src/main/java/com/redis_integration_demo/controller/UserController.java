@@ -4,6 +4,7 @@ import com.redis_integration_demo.dto.CreateUserRequest;
 import com.redis_integration_demo.dto.UpdateUserRequest;
 import com.redis_integration_demo.dto.UserResponse;
 import com.redis_integration_demo.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,11 @@ public class UserController {
             @RequestBody UpdateUserRequest request) {
         UserResponse response = userService.updateUser(id, request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
