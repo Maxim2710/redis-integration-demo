@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(new SuccessResponse("Аккаунт пользователя успешно удален"));
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
         }

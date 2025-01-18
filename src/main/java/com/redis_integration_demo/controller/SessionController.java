@@ -3,6 +3,7 @@ package com.redis_integration_demo.controller;
 import com.redis_integration_demo.dto.CreateSessionRequest;
 import com.redis_integration_demo.dto.ErrorResponse;
 import com.redis_integration_demo.dto.SessionResponse;
+import com.redis_integration_demo.dto.SuccessResponse;
 import com.redis_integration_demo.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,16 @@ public class SessionController {
         try {
             SessionResponse response = sessionService.getSessionByUserId(userId);
             return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
+        }
+    }
+
+    @DeleteMapping(path = "/{userId}")
+    public ResponseEntity<Object> deleteSession(@PathVariable Long userId) {
+        try {
+            sessionService.deleteSession(userId);
+            return ResponseEntity.ok(new SuccessResponse("Сессия у данного пользователя удалена успешно"));
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
         }
