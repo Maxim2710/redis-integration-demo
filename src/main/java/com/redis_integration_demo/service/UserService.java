@@ -1,10 +1,12 @@
 package com.redis_integration_demo.service;
 
 import com.redis_integration_demo.dto.CreateUserRequest;
+import com.redis_integration_demo.dto.UpdateUserRequest;
 import com.redis_integration_demo.dto.UserResponse;
 import com.redis_integration_demo.model.User;
 import com.redis_integration_demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -51,5 +53,41 @@ public class UserService {
                 user.getCreatedAt().toString()
         );
     }
+
+    @CacheEvict(value = "users", key = "#id")
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Пользователь не найден");
+        }
+
+        User user = userOptional.get();
+
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(request.getPassword());
+        }
+
+        userRepository.save(user);
+
+//        clearUserCache(id);
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getCreatedAt().toString()
+        );
+    }
+
+//    @CacheEvict(value = "users", key = "#id")
+//    public void clearUserCache(Long id) {
+//
+//    }
 
 }
