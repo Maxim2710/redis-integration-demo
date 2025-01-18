@@ -2,6 +2,7 @@ package com.redis_integration_demo.service;
 
 import com.redis_integration_demo.dto.CreateUserRequest;
 import com.redis_integration_demo.dto.UpdateUserRequest;
+import com.redis_integration_demo.dto.UserListResponse;
 import com.redis_integration_demo.dto.UserResponse;
 import com.redis_integration_demo.model.User;
 import com.redis_integration_demo.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -92,4 +94,16 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public UserListResponse getAllUsers() {
+        List<UserResponse> users = userRepository.findAll().stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getCreatedAt().toString()
+                ))
+                .toList();
+
+        return new UserListResponse(users);
+    }
 }
