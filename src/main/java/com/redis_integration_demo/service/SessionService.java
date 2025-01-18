@@ -7,6 +7,7 @@ import com.redis_integration_demo.model.User;
 import com.redis_integration_demo.repository.SessionRepository;
 import com.redis_integration_demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -56,5 +57,14 @@ public class SessionService {
                 session.getCreatedAt().toString(),
                 45 * 60
         );
+    }
+
+    @CacheEvict(value = "sessions", key = "#userId")
+    @Transactional
+    public void deleteSession(Long userId) {
+        Session session = sessionRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Сессия у данного пользователя не найдена"));
+
+        sessionRepository.delete(session);
     }
 }
