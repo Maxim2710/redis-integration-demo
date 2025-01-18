@@ -2,6 +2,7 @@ package com.redis_integration_demo.controller;
 
 import com.redis_integration_demo.dto.CreateUserRequest;
 import com.redis_integration_demo.dto.UpdateUserRequest;
+import com.redis_integration_demo.dto.UserListResponse;
 import com.redis_integration_demo.dto.UserResponse;
 import com.redis_integration_demo.service.UserService;
 import org.apache.coyote.Response;
@@ -41,5 +42,11 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<UserListResponse> getAllUsers() {
+        UserListResponse response = userService.getAllUsers();
+        return ResponseEntity.ok(response);
     }
 }
