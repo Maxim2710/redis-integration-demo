@@ -75,8 +75,6 @@ public class UserService {
 
         userRepository.save(user);
 
-//        clearUserCache(id);
-
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
@@ -85,9 +83,13 @@ public class UserService {
         );
     }
 
-//    @CacheEvict(value = "users", key = "#id")
-//    public void clearUserCache(Long id) {
-//
-//    }
+    @CacheEvict(value = "users", key = "#id")
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("Пользователь не найден");
+        }
+
+        userRepository.deleteById(id);
+    }
 
 }
