@@ -21,6 +21,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RedisLogsService redisLogsService;
+
     public UserResponse createUser(CreateUserRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
@@ -28,6 +31,8 @@ public class UserService {
         user.setPassword(request.getPassword());
 
         userRepository.save(user);
+
+        redisLogsService.addLog(String.format("User created: %s", user.getUsername()));
 
         return new UserResponse(
                 user.getId(),
@@ -48,6 +53,8 @@ public class UserService {
         }
 
         User user = userOptional.get();
+
+        redisLogsService.addLog(String.format("Fetched user: %s (ID: %d)", user.getUsername(), user.getId()));
 
         return new UserResponse(
                 user.getId(),
@@ -78,6 +85,8 @@ public class UserService {
 
         userRepository.save(user);
 
+        redisLogsService.addLog(String.format("User updated: %s", user.getUsername()));
+
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
@@ -94,6 +103,8 @@ public class UserService {
         }
 
         userRepository.deleteById(id);
+
+        redisLogsService.addLog(String.format("User deleted with ID: %d", id));
     }
 
     public UserListResponse getAllUsers() {

@@ -17,8 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SessionService {
     @Autowired
     private SessionRepository sessionRepository;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RedisLogsService redisLogsService;
 
     @CachePut(value = "sessions", key = "#result.userId")
     @Transactional
@@ -37,6 +41,8 @@ public class SessionService {
         session.setPassword(request.getPassword());
 
         sessionRepository.save(session);
+
+        redisLogsService.addLog(String.format("Session created for userId: %d", request.getUserId()));
 
         return new SessionResponse(
                 session.getSessionId(),
@@ -66,5 +72,7 @@ public class SessionService {
                 .orElseThrow(() -> new RuntimeException("Сессия у данного пользователя не найдена"));
 
         sessionRepository.delete(session);
+
+        redisLogsService.addLog(String.format("Session deleted for userId: %d", session.getUserId()));
     }
 }
