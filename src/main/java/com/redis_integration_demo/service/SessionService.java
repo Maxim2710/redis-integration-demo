@@ -8,6 +8,7 @@ import com.redis_integration_demo.repository.SessionRepository;
 import com.redis_integration_demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,19 @@ public class SessionService {
         session.setPassword(request.getPassword());
 
         sessionRepository.save(session);
+
+        return new SessionResponse(
+                session.getSessionId(),
+                session.getUserId(),
+                session.getCreatedAt().toString(),
+                45 * 60
+        );
+    }
+
+    @Cacheable(value = "sessions", key = "#userId")
+    public SessionResponse getSessionByUserId(Long userId) {
+        Session session = sessionRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Сессия у данного пользователя не найдена"));
 
         return new SessionResponse(
                 session.getSessionId(),
